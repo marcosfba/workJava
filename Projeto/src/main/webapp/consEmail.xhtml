@@ -1,0 +1,71 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:p="http://primefaces.org/ui"
+    xmlns:f="http://java.sun.com/jsf/core"
+    template="layout.xhtml">
+
+<ui:define name="content">
+	<h:form id="formEmail">
+		<p:messages id="messages" showDetail="true" autoUpdate="true" closable="true" />
+		<p:panel header="Cadastro / Edição do Contato de Email">
+			<p:panelGrid columns="3" style="border:0px;">
+				<p:outputLabel value="Codigo do Email" />
+				<p:inputText id="userId" value="#{emailBean.email.id}" validatorMessage="O codigo do email tem que ser maior que zero">
+					<f:validateLongRange minimum="0"/>
+				</p:inputText>
+				<p:message for="userId" styleClass="error" />				
+
+				<p:outputLabel value="Pessoa:"/>
+				<p:selectOneMenu id="idPessoa" value="#{emailBean.email.pessoa}" converter="#{genericConverter}">
+						<f:selectItem itemLabel="Selecionar" itemValue="" />
+						<f:selectItems value="#{pessoaBean.pessoas}" var="mark" 
+							itemLabel="#{mark.nome}"/>
+				</p:selectOneMenu>
+				<p:message for="idPessoa" styleClass="error" />
+
+				<p:outputLabel value="Tipo de Email:"/>
+				<p:selectOneMenu id="tipoEmailSel" value="#{emailBean.email.tipoEmail}" converter="#{tipoEmailConverter}" validatorMessage="Tipo de Email inválido">
+						<f:selectItem itemLabel="Selecionar" itemValue="" />
+						<f:selectItems value="#{listUtilBean.listTiposEmails}" var="tipo" 
+							itemLabel="#{tipo.description}" itemValue="#{tipo.value}" />
+				</p:selectOneMenu>
+				<p:message for="tipoEmailSel" styleClass="error" />
+	
+				<p:outputLabel value="Descrição do email" />
+				<p:inputText id="descContato" size="45"
+					value="#{emailBean.email.descricao}">
+				</p:inputText>
+				<p:message for="descContato" styleClass="error" />				
+			</p:panelGrid>
+			
+			<p:commandButton value="Buscar" action="#{emailBean.buscar()}"
+				ajax="true" update="formEmail,formListaEmail" />
+			<p:commandButton value="Limpar" action="#{emailBean.limpar()}" 
+			   immediate="true" process="@this" update="formEmail" />
+		</p:panel>
+	</h:form>
+
+	<h:form id="formListaEmail">
+		<p:panel header="Listagem dos Emails">
+			<p:dataTable var="emailGrid" value="#{emailBean.emails}" emptyMessage="Sem registros para serem demonstrados"
+				paginator="true" rows="5" id="table" selection="#{emailBean.emailSel}" rowKey="#{emailGrid.id}">
+				<p:column headerText="Código do Email">
+					<h:outputText value="#{emailGrid.id}" />
+				</p:column>
+				<p:column headerText="Referente a Pessoa">
+					<h:outputText value="#{emailGrid.pessoa.nome}" />
+				</p:column>
+				<p:column headerText="Descrição do Email">
+					<h:outputText value="#{emailGrid.descricao}" />
+				</p:column>
+				<p:column headerText="Tipo de Email">
+					<h:outputText value="#{emailGrid.tipoEmail}" />
+				</p:column>
+			</p:dataTable>
+		</p:panel>
+	</h:form>
+	
+</ui:define>
+</ui:composition>

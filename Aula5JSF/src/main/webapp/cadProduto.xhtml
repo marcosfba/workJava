@@ -1,0 +1,105 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:f="http://java.sun.com/jsf/core" template="layout.xhtml">
+
+	<ui:define name="content">
+		<p:ajaxStatus style="position:fixed;right:20px;bottom:20px">
+			<f:facet name="start">
+				<p:graphicImage library="images" name="carregando.gif" width="64px"
+					height="64px" />
+			</f:facet>
+			<f:facet name="complete">
+				<h:outputText value="" />
+			</f:facet>
+		</p:ajaxStatus>
+		<h:form id="form" enctype="multipart/form-data">
+			<p:growl id="msgs" showDetail="false" showSummary="true" />
+			<p:panel>
+				<h:panelGrid columns="2">
+
+					<h:outputText value="Nome:" />
+					<p:inputText value="#{produtoBean.produto.descricao}" />
+
+					<h:outputText value="Preço:" />
+					<p:inputText value="#{produtoBean.produto.preco}" />
+
+					<p:outputLabel value="Selecione a categoria:" />
+					<p:selectOneMenu id="categoria"
+						value="#{produtoBean.produto.categoria}" required="true"
+						requiredMessage="A categoria não pode deixar de ser selecionada">
+						<f:selectItem itemLabel="Selecionar" itemValue="" />
+						<f:selectItems value="#{produtoBean.listaCategorias}" var="mark"
+							itemLabel="#{mark.descricao}" />
+					</p:selectOneMenu>
+
+					<p:commandButton value="Salvar"
+						action="#{produtoBean.salvar()}"
+						update=":form:msgs, :form:dtProdutos, :form" />
+					<p:commandButton value="Limpar" onclick="form.reset()" />
+				</h:panelGrid>
+			</p:panel>
+			<p:dataTable id="dtProdutos" value="#{produtoBean.listaProdutos}" var="p"
+				style="text-align: center;"
+				emptyMessage="Nenhum produto cadastrado.">
+				<p:column headerText="ID" style="width:2%; font-weight: bold;">
+					<h:outputText value="#{p.id}" />
+				</p:column>
+				<p:column headerText="Nome" style="width:24%">
+					<h:outputText value="#{p.descricao}" />
+				</p:column>
+				<p:column headerText="Preço" style="width:10%">
+					<h:outputText value="#{p.preco}" />
+				</p:column>
+				<p:column style="width:10%" headerText="Ações">
+					<p:panelGrid columns="2" style="border: none">
+						<p:commandButton id="addButton" update=":form:infoFoto"
+							oncomplete="PF('fotoDialog').show()" icon="ui-icon-plus"
+							title="Adicionar imagens">
+							<f:setPropertyActionListener value="#{p}"
+								target="#{produtoBean.prodSel}" />
+						</p:commandButton>
+						<p:commandButton id="showButton" update=":form:infoProduto"
+							oncomplete="PF('produtoDialog').show()" icon="ui-icon-search"
+							title="Visualizar imagens"
+							action="#{produtoBean.listaFotosProduto()}">
+							<f:setPropertyActionListener value="#{p}"
+								target="#{produtoBean.prodSel}" />
+						</p:commandButton>
+					</p:panelGrid>
+				</p:column>
+			</p:dataTable>
+			<p:dialog header="#{produtoBean.prodSel.descricao}"
+				widgetVar="produtoDialog" position="center" resizable="false"
+				id="produtoDlg" showEffect="fade" hideEffect="explode" draggable="true" maximizable="true" minimizable="true">
+				<h:panelGrid id="infoProduto" columns="2" style="margin:0 auto;">
+					<h:outputText value="Nenhnuma imagem encontrada"
+						rendered="#{produtoBean.listFotos.size() == 0}" />
+					<p:galleria var="f" value="#{produtoBean.listFotos}" showCaption="true"
+						panelWidth="400" panelHeight="200" autoPlay="false">
+						<p:graphicImage value="/temp/#{f.fotoId}.jpg" cache="false"
+							title="#{f.fotoDescricao}" />
+					</p:galleria>
+				</h:panelGrid>
+			</p:dialog>
+			<p:dialog header="Adicionar imagens" widgetVar="fotoDialog"
+				position="center" resizable="false" id="fotoDlg" showEffect="fade"
+				hideEffect="explode" width="800">
+				<h:panelGrid id="infoFoto" columns="2">
+					<h:outputText value="Foto: " />
+					<p:fileUpload fileUploadListener="#{produtoBean.processFileUpload}"
+						label="Escolher" cancelLabel="Cancelar" sizeLimit="400000"
+						invalidSizeMessage="Imagem muito grande" auto="true"
+						invalidFileMessage="Tipo de imagem não suportado"
+						allowTypes="/(\.|\/)(jpeg|png|jpg|gif)$/" />
+					<h:outputText value="Descrição: " />
+					<p:inputText value="#{produtoBean.foto.fotoDescricao}" />
+					<p:commandButton value="Adicionar" icon="ui-icon-plus"
+						action="#{produtoBean.salvaFoto()}" update="infoFoto, form" />
+				</h:panelGrid>
+			</p:dialog>
+		</h:form>
+	</ui:define>
+</ui:composition>

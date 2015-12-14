@@ -1,0 +1,43 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:p="http://primefaces.org/ui"
+    xmlns:f="http://java.sun.com/jsf/core"
+    template="layout.xhtml">
+
+<ui:define name="content">
+	<h:form id="formCategoria">
+		<p:messages id="messages" showDetail="true" autoUpdate="true"
+			closable="true" />
+		<p:panel header="Consulta da Categoria">
+			<p:panelGrid columns="2">
+				<p:outputLabel value="Id" />
+				<p:inputText value="#{categoriaBean.consulta.id}"/>
+
+				<p:outputLabel value="Descrição" />
+				<p:inputText value="#{categoriaBean.consulta.descricao}"/>
+
+			</p:panelGrid>
+			<p:commandButton value="Buscar" action="#{categoriaBean.buscar()}" ajax="true" update="formListaCategoria" />
+			<p:commandButton value="Limpar" action="#{categoriaBean.limpar()}" ajax="true" update="formCategoria,formListaCategoria" />
+		</p:panel>
+	</h:form>
+
+	<h:form id="formListaCategoria">
+		<p:panel header="Lista das Categorias">
+			<p:dataTable var="categoria" value="#{categoriaBean.listaCategoria}"
+				paginator="true" rows="5" id="table"
+				selection="#{categoriaBean.categoriaSel}" selectionMode="single"
+				rowKey="#{categoria.id}">
+				<p:column headerText="Código da Categoria">
+					<h:outputText value="#{categoria.id}" />
+				</p:column>
+				<p:column headerText="Descrição da Categoria">
+					<h:outputText value="#{categoria.descricao}" />
+				</p:column>
+			</p:dataTable>
+		</p:panel>
+	</h:form>
+</ui:define>
+</ui:composition>

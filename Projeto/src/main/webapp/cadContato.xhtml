@@ -1,0 +1,356 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:p="http://primefaces.org/ui"
+    xmlns:f="http://java.sun.com/jsf/core"
+    template="layout.xhtml">
+
+<ui:define name="content">
+	<h:form id="formPessoa">
+		<p:messages id="mesPessoa" showDetail="true" autoUpdate="true" closable="true" for="mesPessoa" />
+		<p:panel header="Cadastro do Contato">
+			<p:panelGrid columns="3" style="border:0px;">
+				<p:outputLabel value="Codigo" />
+				<p:inputText id="userId" value="#{contatoBean.contato.id}"
+					readonly="true" />
+				<br />
+
+				<p:outputLabel value="Nome" />
+				<p:inputText id="descricao" size="45"
+					value="#{contatoBean.contato.nome}" required="true"
+					requiredMessage="Nome do Contato é um campo requerido"
+					validatorMessage="Nome do Contato deve conter pelo menos 5 caracteres">
+					<f:validateLength minimum="5" />
+				</p:inputText>
+				<p:message for="descricao" styleClass="error" />
+				
+				<p:outputLabel value="Tipo de Pessoa:"/>
+				<p:selectOneMenu id="tpPessoa" value="#{contatoBean.contato.tipoPessoa}" required="true" 
+					converter="#{tipoPessoaConverter}" requiredMessage="Deve-se selecionar o tipo de Pessoa"
+					validatorMessage="Tipo de Pessoa inválido">
+						<f:selectItem itemLabel="Selecionar" itemValue="" />
+						<f:selectItems value="#{listUtilBean.listTiposPessoas}" var="tipos" 
+							itemLabel="#{tipos.description}" itemValue="#{tipos.value}" />
+				</p:selectOneMenu>
+				<p:message for="tpPessoa" styleClass="error" />
+
+				<p:outputLabel value="Data de Nascimento" />
+				<p:calendar id="dtNascimento" value="#{contatoBean.contato.dtNascimento}"  showOn="button"
+				  validatorMessage="Data de nascimento no formato errado dd/MM/yyyy" pattern="dd/MM/yyyy"/>
+				<p:message for="dtNascimento" styleClass="error" />
+
+				<p:outputLabel value="Telefones" />
+				<p:commandButton value="Adicionar Telefone" oncomplete="PF('detalheTelefone').show();" immediate="true" ajax="true" update="formTelefone">
+					<f:setPropertyActionListener value="#{contatoBean.telefone}" target="#{contatoBean.telefone}" />
+				</p:commandButton>
+				<br />
+								
+ 				<p:outputLabel value="Enderecos" />
+					<p:commandButton value="Adicionar Endereço" oncomplete="PF('detalheEndereco').show();" immediate="true" ajax="true" update="formEndereco">
+						<f:setPropertyActionListener value="#{contatoBean.endereco}" target="#{contatoBean.endereco}" />
+					</p:commandButton>
+				<br />
+
+				<p:outputLabel value="Contatos" />
+					<p:commandButton value="Adicionar Email" oncomplete="PF('detalheContato').show();" immediate="true" ajax="true" update="formContato">
+						<f:setPropertyActionListener value="#{contatoBean.email}" target="#{contatoBean.email}" />
+					</p:commandButton>
+				<br />
+
+  		    </p:panelGrid>
+			
+			<p:commandButton value="Incluir" action="#{contatoBean.salvar()}"
+				ajax="true" update="formPessoa,formListaPessoa" />
+			<p:commandButton value="Alterar" action="#{contatoBean.salvar()}"
+				ajax="true" update="formPessoa,formListaPessoa" />
+			<p:commandButton value="Limpar" action="#{contatoBean.limpar()}" 
+			   immediate="true" process="@this" update="formPessoa" />
+		</p:panel>
+	</h:form>
+
+	<h:form id="formListaPessoa">
+		<p:panel header="Listagem dos Contatos">
+			<p:dataTable var="contatoGrid" value="#{contatoBean.contatos}" paginator="true" rows="5" 
+			id="table" selection="#{contatoBean.contatoSel}" rowKey="#{contatoGrid.id}" emptyMessage="Sem registros para serem demonstrados">
+				<p:column headerText="Código do Contato">
+					<h:outputText value="#{contatoGrid.id}" />
+				</p:column>
+				<p:column headerText="Nome do Contato">
+					<h:outputText value="#{contatoGrid.nome}" />
+				</p:column>
+				<p:column headerText="Data de Nascimento">
+					<h:outputText value="#{contatoGrid.dtNascimento}">
+					<f:convertDateTime pattern="dd/MM/yyyy" />
+					</h:outputText>
+				</p:column>
+				<p:column headerText="Telefones" style="width:8%">
+				<center>
+					<p:commandButton value="View" icon="ui-icon-document-b" oncomplete="PF('detalheConsTelefone').show();" 
+					   process="@form" update=":formConsTelefone" action="#{contatoBean.buscarTelefone(contatoGrid.id)}"/>
+				</center>
+				</p:column>
+				<p:column headerText="Endereços" style="width:8%">
+				<center>
+					<p:commandButton value="View" icon="ui-icon-document-b" oncomplete="PF('detalheConsEndereco').show();" 
+					  process="@form" update=":formConsEnderecos" action="#{contatoBean.buscarEndereco(contatoGrid.id)}"/>
+				</center>
+				</p:column>
+				<p:column headerText="Contatos" style="width:8%">
+				<center>
+					<p:commandButton value="View" icon="ui-icon-document-b" oncomplete="PF('detalheConsContato').show();" 
+					   process="@form" update=":formConsContatos" action="#{contatoBean.buscarEmail(contatoGrid.id)}"/>
+				</center>
+				</p:column>
+				<p:column headerText="Editar" style="width:5%">
+				  <center><p:commandButton action="#{contatoBean.editar()}" icon="ui-icon-document-b" ajax="true" process="@form" update="formPessoa">
+						<f:setPropertyActionListener value="#{contatoGrid}" target="#{contatoBean.contatoSel}" />
+					</p:commandButton>
+				  </center> 
+				</p:column>
+				<p:column headerText="Excluir" style="width:8%">
+				<center>
+					<p:commandButton value="Excluir" oncomplete="PF('detalheDialog').show();" process="@form" update="formRemover">
+						<f:setPropertyActionListener value="#{contatoGrid}" target="#{contatoBean.contatoSel}" />
+					</p:commandButton>
+				</center>
+				</p:column>
+			</p:dataTable>
+		</p:panel>
+	</h:form>
+	
+	<p:dialog header="Exclusão do Contato" widgetVar="detalheDialog" position="center" showEffect="explode">
+	<h:form id="formRemover">
+		<p:panel header="Confirma a remoção?">
+		<center>
+			<p:commandButton value="Sim" action="#{contatoBean.excluir()}" ajax="true" update="formPessoa,formListaPessoa" oncomplete="PF('detalheDialog').hide()" />
+			<p:commandButton value="Não" action="#{contatoBean.limpar()}" ajax="true" update="formPessoa,formListaPessoa" oncomplete="PF('detalheDialog').hide()" />
+		</center>
+		</p:panel>    
+      </h:form>
+	</p:dialog>
+	
+	<p:dialog header="Inclusão de Telefones" widgetVar="detalheTelefone" position="center" showEffect="explode">
+	<h:form id="formTelefone">
+	    <p:messages id="mesTelefone" showDetail="true" autoUpdate="true" closable="true" for="mesTelefone" />
+			<p:panelGrid columns="3" style="border:0px;">
+			
+			<p:outputLabel value="Tipo de Telefone:"/>
+			<p:selectOneMenu id="tpTelefone" value="#{contatoBean.telefone.tipoTelefone}" required="true" 
+				converter="#{tipoTelefoneConverter}" requiredMessage="Deve-se selecionar o tipo de Telefone"
+				validatorMessage="Tipo de Telefone inválido">
+					<f:selectItem itemLabel="Selecionar" itemValue="" />
+					<f:selectItems value="#{listUtilBean.listTiposTelefones}" var="tipos" 
+						itemLabel="#{tipos.description}" itemValue="#{tipos.value}" />
+			</p:selectOneMenu>
+			<p:message for="tpTelefone" styleClass="error" />
+
+			<p:outputLabel value="Nº do DDD" />
+			<p:inputText id="numDdd"
+				value="#{contatoBean.telefone.numDdd}" required="true"
+				requiredMessage="Número do DDD do telefone é um campo requerido"/>
+			<p:message for="numDdd" styleClass="error" />
+
+			<p:outputLabel value="Código de Area" />
+			<p:inputText id="codArea"
+				value="#{contatoBean.telefone.numArea}" required="true"
+				requiredMessage="Código de Aréa do telefone é um campo requerido"/>
+			<p:message for="numDdd" styleClass="error" />
+
+			<p:outputLabel value="Nº do Telefone" />
+			<p:inputText id="numero"
+				value="#{contatoBean.telefone.numTelefone}" required="true"
+				requiredMessage="Número do Telefone é um campo requerido"
+				validatorMessage="Número do Telefone deve conter pelo menos 8 caracteres">
+				<f:validateLength minimum="8" />
+			</p:inputText>
+			<p:message for="numero" styleClass="error" />						
+
+			<p:outputLabel value="Ramal do Telefone" />
+			<p:inputText id="ramal"
+				value="#{contatoBean.telefone.numRamal}" required="true"
+				requiredMessage="Número do Ramal Telefone é um campo requerido"/>
+			<p:message for="ramal" styleClass="error" />
+ 		</p:panelGrid>
+		<center>
+		  <p:commandButton value="Incluir" action="#{contatoBean.adicionarTelefone()}" ajax="true" update="formTelefone" />
+		  <p:commandButton value="Limpar"  action="#{contatoBean.limparTelefone()}" immediate="true" process="@this" update="formTelefone" />
+		</center>			
+    </h:form>
+	</p:dialog>
+	
+ 	<p:dialog header="Inclusão de Endereços" widgetVar="detalheEndereco" position="center" showEffect="explode">
+	<h:form id="formEndereco">
+	    <p:messages id="mesEndereco" showDetail="true" autoUpdate="true" closable="true" for="mesEndereco" />
+			<p:panelGrid columns="3" style="border:0px;">
+				<p:outputLabel value="Tipo de Endereço:"/>
+				<p:selectOneMenu id="tpEndereco" value="#{contatoBean.endereco.tipoEndereco}" required="true" 
+					converter="#{tipoEnderecoConverter}" requiredMessage="Deve-se selecionar o tipo de Endereço"
+					validatorMessage="Tipo de Endereço inválido">
+						<f:selectItem itemLabel="Selecionar" itemValue="" />
+						<f:selectItems value="#{listUtilBean.listTiposEnderecos}" var="tipos" 
+							itemLabel="#{tipos.description}" itemValue="#{tipos.value}" />
+				</p:selectOneMenu>
+				<p:message for="tpEndereco" styleClass="error" />
+
+				<p:outputLabel value="Endereço/Logradouro" />
+				<p:inputText id="nomeEndereco"
+					value="#{contatoBean.endereco.logradouro}" required="true"
+					requiredMessage="Logradouro / Endereço é um campo requerido"/>
+				<p:message for="nomeEndereco" styleClass="error" />
+
+				<p:outputLabel value="Selecione o estado:" />
+				<p:selectOneMenu id="idUf" 
+					value="#{contatoBean.endereco.estado}" required="true"
+					requiredMessage="A pessoa  não pode deixar de ser selecionada">
+					<f:selectItem itemLabel="Selecionar" itemValue="" />
+					<f:selectItems value="#{listUtilBean.listUfs}" var="mark"
+						itemLabel="#{mark}" itemValue="#{mark}" />
+				</p:selectOneMenu>
+				<p:message for="idUf" styleClass="error" />		
+
+				<p:outputLabel value="Cidade" />
+				<p:inputText id="nomeCidade"
+					value="#{contatoBean.endereco.cidade}" required="true"
+					requiredMessage="Nome da Cidade é um campo requerido"/>
+				<p:message for="nomeCidade" styleClass="error" />
+
+				<p:outputLabel value="País" />
+				<p:inputText id="nomePais"
+					value="#{contatoBean.endereco.pais}" required="true"
+					requiredMessage="Nome do País é um campo requerido"/>
+				<p:message for="nomePais" styleClass="error" />
+
+				<p:outputLabel value="Número Cep" />
+				<p:inputText id="numeroCep"
+					value="#{contatoBean.endereco.cep}" required="true"
+					requiredMessage="Cep referente ao é um campo requerido"/>
+				<p:message for="numero" styleClass="error" />
+
+				<p:outputLabel value="Número" />
+				<p:inputText id="numero"
+					value="#{contatoBean.endereco.numero}" required="true"
+					requiredMessage="Número do endereço é um campo requerido"/>
+				<p:message for="numero" styleClass="error" />
+
+				<p:outputLabel value="Complemento" />
+				<p:inputText id="complemento"
+					value="#{contatoBean.endereco.complemento}" />
+				<p:message for="complemento" styleClass="error" />
+			</p:panelGrid>
+		<center>
+		  <p:commandButton value="Incluir" action="#{contatoBean.adicionarEndereco()}" ajax="true" update="formEndereco" />
+		  <p:commandButton value="Limpar"  action="#{contatoBean.limparEndereco()}" immediate="true" process="@this" update="formEndereco" />
+		</center>			
+    </h:form>
+	</p:dialog>
+
+	<p:dialog header="Inclusão de Email" widgetVar="detalheContato" position="center" showEffect="explode">
+	<h:form id="formContato">
+	    <p:messages id="mesContato" showDetail="true" autoUpdate="true" closable="true" for="mesContato" />
+			<p:panelGrid columns="3" style="border:0px;">
+				<p:outputLabel value="Tipo de Email:"/>
+				<p:selectOneMenu id="tipoEmailSel" value="#{contatoBean.email.tipoEmail}" required="true" 
+					converter="#{tipoEmailConverter}" requiredMessage="Deve-se selecionar o tipo de Email"
+					validatorMessage="Tipo de Email inválido">
+						<f:selectItem itemLabel="Selecionar" itemValue="" />
+						<f:selectItems value="#{listUtilBean.listTiposEmails}" var="tipo" 
+							itemLabel="#{tipo.description}" itemValue="#{tipo.value}" />
+				</p:selectOneMenu>
+				<p:message for="tipoEmailSel" styleClass="error" />
+	
+				<p:outputLabel value="Descrição do email" />
+				<p:inputText id="descContato" size="45"
+					value="#{contatoBean.email.descricao}" required="true"
+					equiredMessage="Descrição do email é um campo requerido">
+				</p:inputText>
+				<p:message for="descContato" styleClass="error" />				
+			</p:panelGrid>
+		<center>
+		  <p:commandButton value="Incluir" action="#{contatoBean.adicionarEmail()}" ajax="true" update="formContato" />
+		  <p:commandButton value="Limpar"  action="#{contatoBean.limparEmail()}" immediate="true" process="@this" update="formContato" />
+		</center>			
+	</h:form>
+	</p:dialog>
+ 	
+	<p:dialog header="Visualizar Telefones" widgetVar="detalheConsTelefone" position="center" showEffect="explode" width="600">
+	<h:form id="formConsTelefone">
+		<p:dataTable var="telefone" value="#{contatoBean.telefones}" emptyMessage="Sem registros para serem visualizados"
+			paginator="true" rows="5" id="table" rowKey="#{telefone.id}">
+			<p:column headerText="Código do Telefone">
+				<h:outputText value="#{telefone.id}" />
+			</p:column>
+			<p:column headerText="Descrição Tipo Telefone">
+				<h:outputText value="#{telefone.tipoTelefone}" />
+			</p:column>
+			<p:column headerText="Nº do Telefone">
+				<h:outputText value="#{telefone.numTelefone}" />
+			</p:column>
+			<p:column headerText="Nº do DDD">
+				<h:outputText value="#{telefone.numDdd}" />
+			</p:column>
+			<p:column headerText="Código de Area">
+				<h:outputText value="#{telefone.numArea}" />
+			</p:column>
+			<p:column headerText="Ramal">
+				<h:outputText value="#{telefone.numRamal}" />
+			</p:column>
+		</p:dataTable>
+    </h:form>
+	</p:dialog>
+	
+	<p:dialog header="Visualizar Endereços" widgetVar="detalheConsEndereco" position="center" showEffect="explode" width="800">
+	<h:form id="formConsEnderecos">
+		<p:dataTable var="enderecoGrid" value="#{contatoBean.enderecos}" emptyMessage="Sem registros para serem visualizados"
+			paginator="true" rows="5" id="table" rowKey="#{enderecoGrid.id}">
+			<p:column headerText="Código do Endereço">
+				<h:outputText value="#{enderecoGrid.id}" />
+			</p:column>
+			<p:column headerText="Descrição Tipo Endereço">
+				<h:outputText value="#{enderecoGrid.tipoEndereco}" />
+			</p:column>
+			<p:column headerText="Logradouro">
+				<h:outputText value="#{enderecoGrid.logradouro}" />
+			</p:column>
+			<p:column headerText="UF">
+				<h:outputText value="#{enderecoGrid.estado}" />
+			</p:column>
+			<p:column headerText="Cidade">
+				<h:outputText value="#{enderecoGrid.cidade}" />
+			</p:column>
+			<p:column headerText="CEP">
+				<h:outputText value="#{enderecoGrid.cep}" />
+			</p:column>
+			<p:column headerText="Número">
+				<h:outputText value="#{enderecoGrid.numero}" />
+			</p:column>
+			<p:column headerText="Complemento">
+				<h:outputText value="#{enderecoGrid.complemento}" />
+			</p:column>
+			<p:column headerText="País">
+				<h:outputText value="#{enderecoGrid.pais}" />
+			</p:column>
+		</p:dataTable>
+    </h:form>
+	</p:dialog>
+
+	<p:dialog header="Visualizar Emails" widgetVar="detalheConsContato" position="center" showEffect="explode" width="600">
+	<h:form id="formConsContatos">
+ 		<p:dataTable var="emailGrid" value="#{contatoBean.emails}" emptyMessage="Sem registros para serem visualizados"
+			paginator="true" rows="5" id="table" rowKey="#{emailGrid.id}">
+			<p:column headerText="Código do Email">
+				<h:outputText value="#{emailGrid.id}" />
+			</p:column>
+			<p:column headerText="Descrição do Email">
+				<h:outputText value="#{emailGrid.descricao}" />
+			</p:column>
+			<p:column headerText="Tipo de Email">
+				<h:outputText value="#{emailGrid.tipoEmail}" />
+			</p:column>
+		</p:dataTable>
+    </h:form>
+	</p:dialog>
+	
+
+</ui:define>
+</ui:composition>

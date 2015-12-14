@@ -1,0 +1,100 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:p="http://primefaces.org/ui"
+    xmlns:f="http://java.sun.com/jsf/core"
+    template="layout.xhtml">
+
+<ui:define name="content">
+	<h:form id="formPessoa">
+		<p:messages id="messages" showDetail="true" autoUpdate="true" closable="true" />
+		<p:panel header="Cadastro / Edição da Pessoa">
+			<p:panelGrid columns="3" style="border:0px;">
+				<p:outputLabel value="Codigo" />
+				<p:inputText id="userId" value="#{pessoaBean.pessoa.id}"
+					readonly="true" />
+				<br />
+
+				<p:outputLabel value="Nome" />
+				<p:inputText id="descricao" size="45"
+					value="#{pessoaBean.pessoa.nome}" required="true"
+					requiredMessage="Nome da Pessoa é um campo requerido"
+					validatorMessage="Nome da Pessoa deve conter pelo menos 5 caracteres">
+					<f:validateLength minimum="5" />
+				</p:inputText>
+				<p:message for="descricao" styleClass="error" />
+				
+				<p:outputLabel value="Tipo de Pessoa:"/>
+				<p:selectOneMenu id="tpPessoa" value="#{pessoaBean.pessoa.tipoPessoa}" required="true" 
+					converter="#{tipoPessoaConverter}" requiredMessage="Deve-se selecionar o tipo de Pessoa"
+					validatorMessage="Tipo de Pessoa inválido">
+						<f:selectItem itemLabel="Selecionar" itemValue="" />
+						<f:selectItems value="#{listUtilBean.listTiposPessoas}" var="tipos" 
+							itemLabel="#{tipos.description}" itemValue="#{tipos.value}" />
+				</p:selectOneMenu>
+				<p:message for="tpPessoa" styleClass="error" />
+
+				<p:outputLabel value="Data de Nascimento" />
+				<p:calendar id="dtNascimento" value="#{pessoaBean.pessoa.dtNascimento}"  showOn="button"
+				  validatorMessage="Data de nascimento no formato errado dd/MM/yyyy" pattern="dd/MM/yyyy"/>
+				<p:message for="dtNascimento" styleClass="error" />
+  		    </p:panelGrid>
+			
+			<p:commandButton value="Incluir" action="#{pessoaBean.salvar()}"
+				ajax="true" update="formPessoa,formListaPessoa" />
+			<p:commandButton value="Alterar" action="#{pessoaBean.salvar()}"
+				ajax="true" update="formPessoa,formListaPessoa" />
+			<p:commandButton value="Limpar" action="#{pessoaBean.limpar()}" 
+			   immediate="true" process="@this" update="formPessoa" />
+		</p:panel>
+	</h:form>
+
+	<h:form id="formListaPessoa">
+		<p:panel header="Listagem das Pessoas">
+			<p:dataTable var="pessoaGrid" value="#{pessoaBean.pessoas}" paginator="true" rows="5" 
+			id="table" selection="#{pessoaBean.pessoaSel}" rowKey="#{pessoaGrid.id}" emptyMessage="Sem registros para serem demonstrados">
+				<p:column headerText="Código da Pessoa">
+					<h:outputText value="#{pessoaGrid.id}" />
+				</p:column>
+				<p:column headerText="Nome da Pessoa">
+					<h:outputText value="#{pessoaGrid.nome}" />
+				</p:column>
+				<p:column headerText="Data de Nascimento">
+					<h:outputText value="#{pessoaGrid.dtNascimento}">
+					<f:convertDateTime pattern="dd/MM/yyyy" />
+					</h:outputText>
+				</p:column>
+				<p:column headerText="Tipo de Pessoa">
+					<h:outputText value="#{pessoaGrid.tipoPessoa.descricao}" />
+				</p:column>
+				<p:column headerText="Editar" style="width:5%">
+				  <center><p:commandButton action="#{pessoaBean.editar()}" icon="ui-icon-document-b" ajax="true" process="@form" update="formPessoa">
+						<f:setPropertyActionListener value="#{pessoaGrid}" target="#{pessoaBean.pessoaSel}" />
+					</p:commandButton>
+				  </center> 
+				</p:column>
+				<p:column headerText="Excluir" style="width:8%">
+				<center>
+					<p:commandButton value="Excluir" oncomplete="PF('detalheDialog').show();" process="@form" update="formRemover">
+						<f:setPropertyActionListener value="#{pessoaGrid}" target="#{pessoaBean.pessoaSel}" />
+					</p:commandButton>
+				</center>
+				</p:column>
+			</p:dataTable>
+		</p:panel>
+	</h:form>
+	
+	<p:dialog header="Exclusão da Pessoa" widgetVar="detalheDialog" position="center" showEffect="explode">
+	<h:form id="formRemover">
+		<p:panel header="Confirma a remoção?">
+		<center>
+			<p:commandButton value="Sim" action="#{pessoaBean.excluir()}" ajax="true" update="formPessoa,formListaPessoa" oncomplete="PF('detalheDialog').hide()" />
+			<p:commandButton value="Não" action="#{pessoaBean.limpar()}" ajax="true" update="formPessoa,formListaPessoa" oncomplete="PF('detalheDialog').hide()" />
+		</center>
+		</p:panel>    
+      </h:form>
+	</p:dialog>
+	
+</ui:define>
+</ui:composition>

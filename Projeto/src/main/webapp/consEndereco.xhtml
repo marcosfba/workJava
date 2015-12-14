@@ -1,0 +1,109 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:p="http://primefaces.org/ui"
+    xmlns:f="http://java.sun.com/jsf/core"
+    template="layout.xhtml">
+
+<ui:define name="content">
+	<h:form id="formEndereco">
+		<p:messages id="messages" showDetail="true" autoUpdate="true" closable="true" />
+		<p:panel header="Consulta de Endereços">
+			<p:panelGrid columns="3" style="border:0px;">
+				<p:outputLabel value="Codigo do Endereço" />
+				<p:inputText id="userId" value="#{enderecoBean.endereco.id}" validatorMessage="O codigo do endereço tem que ser maior que zero">
+					<f:validateLongRange minimum="0"/>
+				</p:inputText>
+				<p:message for="userId" styleClass="error" />
+
+				<p:outputLabel value="Tipo de Endereço:"/>
+				<p:selectOneMenu id="tpEndereco" value="#{enderecoBean.endereco.tipoEndereco}" converter="#{tipoEnderecoConverter}" 
+					validatorMessage="Tipo de Endereço inválido">
+						<f:selectItem itemLabel="Selecionar" itemValue="" />
+						<f:selectItems value="#{listUtilBean.listTiposEnderecos}" var="tipos" 
+							itemLabel="#{tipos.description}" itemValue="#{tipos.value}" />
+				</p:selectOneMenu>
+				<p:message for="tpEndereco" styleClass="error" />
+
+				<p:outputLabel value="Pessoa:"/>
+				<p:selectOneMenu id="idPessoa" value="#{enderecoBean.endereco.pessoa}" converter="#{genericConverter}" >
+						<f:selectItem itemLabel="Selecionar" itemValue="" />
+						<f:selectItems value="#{pessoaBean.pessoas}" var="mark" 
+							itemLabel="#{mark.nome}"/>
+				</p:selectOneMenu>
+				<p:message for="idPessoa" styleClass="error" />
+
+				<p:outputLabel value="Endereço/Logradouro" />
+				<p:inputText id="nomeEndereco"
+					value="#{enderecoBean.endereco.logradouro}"/>
+				<p:message for="nomeEndereco" styleClass="error" />
+
+				<p:outputLabel value="Selecione o estado:" />
+				<p:selectOneMenu id="idUf" 
+					value="#{enderecoBean.endereco.estado}">
+					<f:selectItem itemLabel="Selecionar" itemValue="" />
+					<f:selectItems value="#{listUtilBean.listUfs}" var="mark"
+						itemLabel="#{mark}" itemValue="#{mark}" />
+				</p:selectOneMenu>
+				<p:message for="idUf" styleClass="error" />		
+
+				<p:outputLabel value="Cidade" />
+				<p:inputText id="nomeCidade"
+					value="#{enderecoBean.endereco.cidade}"/>
+				<p:message for="nomeCidade" styleClass="error" />
+
+				<p:outputLabel value="Número Cep" />
+				<p:inputText id="numeroCep" value="#{enderecoBean.endereco.cep}" />
+				<p:message for="numeroCep" styleClass="error" />
+
+			</p:panelGrid>
+			
+			<p:commandButton value="Buscar" action="#{enderecoBean.buscar()}"
+				ajax="true" update="formListaEndereco" />
+			<p:commandButton value="Limpar" action="#{enderecoBean.limpar()}" 
+			   immediate="true" process="@this" update="formEndereco" />
+		</p:panel>
+	</h:form>
+
+	<h:form id="formListaEndereco">
+		<p:panel header="Listagem dos Endereços">
+			<p:dataTable var="enderecoGrid" value="#{enderecoBean.enderecos}"
+				paginator="true" rows="5" id="table" selection="#{enderecoBean.enderecoSel}"  
+				rowKey="#{enderecoGrid.id}" emptyMessage="Sem registros para serem demonstrados">
+				<p:column headerText="Código do Endereço">
+					<h:outputText value="#{enderecoGrid.id}" />
+				</p:column>
+				<p:column headerText="Referente a Pessoa">
+					<h:outputText value="#{enderecoGrid.pessoa.nome}" />
+				</p:column>
+				<p:column headerText="Descrição Tipo Endereço">
+					<h:outputText value="#{enderecoGrid.tipoEndereco}" />
+				</p:column>
+				<p:column headerText="Logradouro">
+					<h:outputText value="#{enderecoGrid.logradouro}" />
+				</p:column>
+				<p:column headerText="UF">
+					<h:outputText value="#{enderecoGrid.estado}" />
+				</p:column>
+				<p:column headerText="Cidade">
+					<h:outputText value="#{enderecoGrid.cidade}" />
+				</p:column>
+				<p:column headerText="CEP">
+					<h:outputText value="#{enderecoGrid.cep}" />
+				</p:column>
+				<p:column headerText="Número">
+					<h:outputText value="#{enderecoGrid.numero}" />
+				</p:column>
+				<p:column headerText="Complemento">
+					<h:outputText value="#{enderecoGrid.complemento}" />
+				</p:column>
+				<p:column headerText="País">
+					<h:outputText value="#{enderecoGrid.pais}" />
+				</p:column>
+			</p:dataTable>
+		</p:panel>
+	</h:form>
+	
+</ui:define>
+</ui:composition>

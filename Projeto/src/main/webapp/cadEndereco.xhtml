@@ -1,0 +1,158 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:p="http://primefaces.org/ui"
+    xmlns:f="http://java.sun.com/jsf/core"
+    template="layout.xhtml">
+
+<ui:define name="content">
+	<h:form id="formEndereco">
+		<p:messages id="messages" showDetail="true" autoUpdate="true" closable="true" />
+		<p:panel header="Cadastro / Edição do Endereço">
+			<p:panelGrid columns="3" style="border:0px;">
+				<p:outputLabel value="Codigo do Endereço" />
+				<p:inputText id="userId" value="#{enderecoBean.endereco.id}" 
+					readonly="true" />
+				<br />
+
+				<p:outputLabel value="Tipo de Endereço:"/>
+				<p:selectOneMenu id="tpEndereco" value="#{enderecoBean.endereco.tipoEndereco}" required="true" 
+					converter="#{tipoEnderecoConverter}" requiredMessage="Deve-se selecionar o tipo de Endereço"
+					validatorMessage="Tipo de Endereço inválido">
+						<f:selectItem itemLabel="Selecionar" itemValue="" />
+						<f:selectItems value="#{listUtilBean.listTiposEnderecos}" var="tipos" 
+							itemLabel="#{tipos.description}" itemValue="#{tipos.value}" />
+				</p:selectOneMenu>
+				<p:message for="tpEndereco" styleClass="error" />
+
+				<p:outputLabel value="Pessoa:"/>
+				<p:selectOneMenu id="idPessoa" value="#{enderecoBean.endereco.pessoa}" required="true" 
+					converter="#{genericConverter}" requiredMessage="Deve-se selecionar a pessoa">
+						<f:selectItem itemLabel="Selecionar" itemValue="" />
+						<f:selectItems value="#{pessoaBean.pessoas}" var="mark" 
+							itemLabel="#{mark.nome}"/>
+				</p:selectOneMenu>
+				<p:message for="idPessoa" styleClass="error" />
+
+				<p:outputLabel value="Endereço/Logradouro" />
+				<p:inputText id="nomeEndereco"
+					value="#{enderecoBean.endereco.logradouro}" required="true"
+					requiredMessage="Logradouro / Endereço é um campo requerido"/>
+				<p:message for="nomeEndereco" styleClass="error" />
+
+				<p:outputLabel value="Selecione o estado:" />
+				<p:selectOneMenu id="idUf" 
+					value="#{enderecoBean.endereco.estado}" required="true"
+					requiredMessage="A pessoa  não pode deixar de ser selecionada">
+					<f:selectItem itemLabel="Selecionar" itemValue="" />
+					<f:selectItems value="#{listUtilBean.listUfs}" var="mark"
+						itemLabel="#{mark}" itemValue="#{mark}" />
+				</p:selectOneMenu>
+				<p:message for="idUf" styleClass="error" />		
+
+				<p:outputLabel value="Cidade" />
+				<p:inputText id="nomeCidade"
+					value="#{enderecoBean.endereco.cidade}" required="true"
+					requiredMessage="Nome da Cidade é um campo requerido"/>
+				<p:message for="nomeCidade" styleClass="error" />
+
+				<p:outputLabel value="País" />
+				<p:inputText id="nomePais"
+					value="#{enderecoBean.endereco.pais}" required="true"
+					requiredMessage="Nome do País é um campo requerido"/>
+				<p:message for="nomePais" styleClass="error" />
+
+				<p:outputLabel value="Número Cep" />
+				<p:inputText id="numeroCep"
+					value="#{enderecoBean.endereco.cep}" required="true"
+					requiredMessage="Cep referente ao é um campo requerido"/>
+				<p:message for="numero" styleClass="error" />
+
+				<p:outputLabel value="Número" />
+				<p:inputText id="numero"
+					value="#{enderecoBean.endereco.numero}" required="true"
+					requiredMessage="Número do endereço é um campo requerido"/>
+				<p:message for="numero" styleClass="error" />
+
+				<p:outputLabel value="Complemento" />
+				<p:inputText id="complemento"
+					value="#{enderecoBean.endereco.complemento}" />
+				<p:message for="complemento" styleClass="error" />
+			</p:panelGrid>
+			
+			<p:commandButton value="Incluir" action="#{enderecoBean.salvar()}"
+				ajax="true" update="formListaEndereco" />
+			<p:commandButton value="Alterar" action="#{enderecoBean.salvar()}"
+				ajax="true" update="formListaEndereco" />
+			<p:commandButton value="Limpar" action="#{enderecoBean.limpar()}" 
+			   immediate="true" process="@this" update="formEndereco" />
+		</p:panel>
+	</h:form>
+
+	<h:form id="formListaEndereco">
+		<p:panel header="Listagem dos Endereços">
+			<p:dataTable var="enderecoGrid" value="#{enderecoBean.enderecos}"
+				paginator="true" rows="5" id="table" selection="#{enderecoBean.enderecoSel}"  
+				rowKey="#{enderecoGrid.id}" emptyMessage="Sem registros para serem demonstrados">
+				<p:column headerText="Código do Endereço">
+					<h:outputText value="#{enderecoGrid.id}" />
+				</p:column>
+				<p:column headerText="Referente a Pessoa">
+					<h:outputText value="#{enderecoGrid.pessoa.nome}" />
+				</p:column>
+				<p:column headerText="Descrição Tipo Endereço">
+					<h:outputText value="#{enderecoGrid.tipoEndereco}" />
+				</p:column>
+				<p:column headerText="Logradouro">
+					<h:outputText value="#{enderecoGrid.logradouro}" />
+				</p:column>
+				<p:column headerText="UF">
+					<h:outputText value="#{enderecoGrid.estado}" />
+				</p:column>
+				<p:column headerText="Cidade">
+					<h:outputText value="#{enderecoGrid.cidade}" />
+				</p:column>
+				<p:column headerText="CEP">
+					<h:outputText value="#{enderecoGrid.cep}" />
+				</p:column>
+				<p:column headerText="Número">
+					<h:outputText value="#{enderecoGrid.numero}" />
+				</p:column>
+				<p:column headerText="Complemento">
+					<h:outputText value="#{enderecoGrid.complemento}" />
+				</p:column>
+				<p:column headerText="País">
+					<h:outputText value="#{enderecoGrid.pais}" />
+				</p:column>
+				<p:column headerText="Editar" style="width:8%">
+				<center>
+					<p:commandButton icon="ui-icon-document-b" action="#{enderecoBean.editar()}" ajax="true" update="formEndereco">
+						<f:setPropertyActionListener value="#{enderecoGrid}" target="#{enderecoBean.enderecoSel}" />
+					</p:commandButton>
+				</center>
+				</p:column>
+				<p:column headerText="Excluir" style="width:8%">
+				<center>
+					<p:commandButton value="Excluir" oncomplete="PF('detalheDialog').show();" process="@form" update="formRemover">
+						<f:setPropertyActionListener value="#{enderecoGrid}" target="#{enderecoBean.enderecoSel}" />
+					</p:commandButton>
+				</center>
+				</p:column>
+			</p:dataTable>
+		</p:panel>
+	</h:form>
+	
+	<p:dialog header="Excluir Telefone" widgetVar="detalheDialog" position="center" showEffect="explode">
+	<h:form id="formRemover">
+		<p:panel header="Confirma a remoção?">
+		<center>
+			<p:commandButton value="Sim" action="#{enderecoBean.excluir()}" ajax="true" update="formEndereco,formListaEndereco" oncomplete="PF('detalheDialog').hide()" />
+			<p:commandButton value="Não" action="#{enderecoBean.limpar()}" ajax="true" update="formEndereco,formListaEndereco" oncomplete="PF('detalheDialog').hide()" />
+		</center>
+		</p:panel>    
+      </h:form>
+	</p:dialog>
+	
+</ui:define>
+</ui:composition>

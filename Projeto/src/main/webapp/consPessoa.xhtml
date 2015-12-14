@@ -1,0 +1,69 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:p="http://primefaces.org/ui"
+    xmlns:f="http://java.sun.com/jsf/core"
+    template="layout.xhtml">
+
+<ui:define name="content">
+	<h:form id="formPessoa">
+		<p:messages id="messages" showDetail="true" autoUpdate="true" closable="true" />
+		<p:panel header="Consulta de Pessoas">
+			<p:panelGrid columns="3" style="border:0px;">
+				<p:outputLabel value="Codigo" />
+				<p:inputText id="userId" value="#{pessoaBean.pessoa.id}"  validatorMessage="O código da pessoa tem que ser maior que zero">
+					<f:validateLongRange minimum="0"/>
+				</p:inputText>
+				<p:message for="userId" styleClass="error" />
+
+				<p:outputLabel value="Nome" />
+				<p:inputText id="descricao" size="45" value="#{pessoaBean.pessoa.nome}"/>
+				<p:message for="descricao" styleClass="error" />
+				
+				<p:outputLabel value="Tipo de Pessoa:"/>
+				<p:selectOneMenu id="tpPessoa" value="#{pessoaBean.pessoa.tipoPessoa}" converter="#{tipoPessoaConverter}"
+					validatorMessage="Tipo de Pessoa inválido">
+						<f:selectItem itemLabel="Selecionar" itemValue="" />
+						<f:selectItems value="#{listUtilBean.listTiposPessoas}" var="tipos" 
+							itemLabel="#{tipos.description}" itemValue="#{tipos.value}" />
+				</p:selectOneMenu>
+				<p:message for="tpPessoa" styleClass="error" />
+
+				<p:outputLabel value="Data de Nascimento" />
+				<p:calendar id="dtNascimento" value="#{pessoaBean.pessoa.dtNascimento}"  showOn="button"
+				  validatorMessage="Data de nascimento no formato errado dd/MM/yyyy" pattern="dd/MM/yyyy"/>
+				<p:message for="dtNascimento" styleClass="error" />
+  		    </p:panelGrid>
+			
+			<p:commandButton value="Buscar" action="#{pessoaBean.buscar()}"
+				ajax="true" update="formPessoa,formListaPessoa" />
+			<p:commandButton value="Limpar" action="#{pessoaBean.limpar()}" 
+			   immediate="true" process="@this" update="formPessoa" />
+		</p:panel>
+	</h:form>
+
+	<h:form id="formListaPessoa">
+		<p:panel header="Listagem das Pessoas">
+			<p:dataTable var="pessoaGrid" value="#{pessoaBean.pessoas}" paginator="true" rows="5" 
+			id="table" selection="#{pessoaBean.pessoaSel}" rowKey="#{pessoaGrid.id}" emptyMessage="Sem registros para serem demonstrados">
+				<p:column headerText="Código da Pessoa">
+					<h:outputText value="#{pessoaGrid.id}" />
+				</p:column>
+				<p:column headerText="Nome da Pessoa">
+					<h:outputText value="#{pessoaGrid.nome}" />
+				</p:column>
+				<p:column headerText="Data de Nascimento">
+					<h:outputText value="#{pessoaGrid.dtNascimento}">
+					<f:convertDateTime pattern="dd/MM/yyyy" />
+					</h:outputText>
+				</p:column>
+				<p:column headerText="Tipo de Pessoa">
+					<h:outputText value="#{pessoaGrid.tipoPessoa.descricao}" />
+				</p:column>
+			</p:dataTable>
+		</p:panel>
+	</h:form>
+	
+</ui:define>
+</ui:composition>

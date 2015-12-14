@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+<h:head>
+	<title>Aula 4- JSF - Trabalhando com Layouts</title>
+	<style>
+		 .ui-layout-north {
+		   z-index:20 !important;
+		   overflow:visible;
+		  }
+		
+		  .ui-layout-north .ui-layout-unit-content {
+		    overflow:visible;
+		  }
+		  
+		  .ui-layout-container {
+		    width: 1366px;
+		    height: 768px;
+		  }
+		
+	</style>
+</h:head>
+<h:body>
+	
+	<p:layout style="min-width:1366px;min-height:768px;margin:0 auto">
+		<p:layoutUnit position="north" size="65">	
+		      <h:form>		
+				<p:menubar>
+					<p:submenu label="Cadastros" icon="ui-icon-document">
+						<p:menuitem value="Categoria"    action="#{menuBean.cadCategoria()}" />
+						<p:menuitem value="Produto"      action="#{menuBean.cadProduto()}" />
+						<p:menuitem value="Usuário"      action="#{menuBean.cadLogin()}"/>
+						<p:menuitem value="Pedido"       action="#{menuBean.cadPedido()}"/>
+					</p:submenu>
+					<p:submenu label="Listagens" icon="ui-icon-document">
+						<p:menuitem value="Categoria"    action="#{menuBean.listarCategoria()}" />
+						<p:menuitem value="Produto"      action="#{menuBean.listarProduto()}" />
+						<p:menuitem value="Usuário"      action="#{menuBean.listarLogin()}" />
+						<p:menuitem value="Pedido"       action="#{menuBean.listarPedido()}" />
+					</p:submenu>
+						<f:facet name="options">
+						<h:form id="mensagem">
+							<p:inputText style="margin-right:10px" placeholder="Search" />
+							<p:commandButton type="button" value="Buscar" icon="ui-icon-extlink" action="#{menuBean.buscar()}" update="mensagem" ajax="true" />
+						</h:form>
+						</f:facet>
+				</p:menubar>
+			</h:form>			
+		</p:layoutUnit>
+		<p:layoutUnit position="center">
+			<ui:insert name="content"></ui:insert>
+		</p:layoutUnit>
+		<p:layoutUnit position="south" size="50">
+			<center><p:outputLabel value="Copyright ©2015 by Marcos Fernando Barbosa. All Rights reserved. E-Mail: marcosfbarbosa@netsite.com.br" styleClass="color:#FFFFFF; font-family:Tahoma; font-size:11px;"/></center>
+		</p:layoutUnit>
+	</p:layout>
+</h:body>
+</html>

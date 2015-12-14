@@ -1,0 +1,117 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:p="http://primefaces.org/ui"
+    xmlns:f="http://java.sun.com/jsf/core"
+    template="layout.xhtml">
+
+<ui:define name="content">
+
+	<p:messages id="messages" showDetail="true" autoUpdate="true" closable="true" />
+	<p:tabView id="tela">
+        <p:tab title="Catalogo de Produtos">
+			<h:form id="formListaProdutos">
+					<p:dataTable var="produto" value="#{pedidoBean.listaProdutos}" scrollable="true" id="table" 
+					selection="#{pedidoBean.prodSel}" rowKey="#{produto.id}">
+						<p:column headerText="Descrição do Produto">
+							<h:outputText value="#{produto.descricao}" />
+						</p:column>
+						<p:column headerText="Detalhar" style="width:8%">
+							<p:commandButton icon="ui-icon-document-b" oncomplete="PF('detalheDialog').show();" process="@form" update=":formSelecao">
+								<f:setPropertyActionListener value="#{produto}" target="#{pedidoBean.prodSel}" />
+							</p:commandButton>
+						</p:column>
+					</p:dataTable>
+			</h:form>
+        </p:tab>
+        <p:tab title="Fechamento do Pedido">
+           <p:tabView>
+           	  <p:tab title="Itens selecionados no pedido">
+				<h:form id="formListaItens">
+						<p:dataTable var="produtoSel" value="#{pedidoBean.listaProdutosSel}" scrollable="true" editable="true"  editMode="cell" rowKey="#{produtoSel.id}">
+						    <p:ajax event="cellEdit" listener="#{pedidoBean.onCellEdit}" process="@form" />       
+							<p:column headerText="Código do Produto">
+								<h:outputText value="#{produtoSel.codigo}" />
+							</p:column>
+							<p:column headerText="Descrição do Produto">
+								<h:outputText value="#{produtoSel.descricao}" />
+							</p:column>
+							<p:column headerText="Valor do produto">
+								<h:outputText value="#{produtoSel.precoVenda}" />
+							</p:column>
+							<p:column headerText="Quantidade">
+								<p:cellEditor>
+									<f:facet name="output"><h:outputText value="#{produtoSel.quantidade}" /></f:facet>
+									<f:facet name="input"><p:inputText value="#{produtoSel.quantidade}" style="width:100%" label="Quantidade"/></f:facet>
+								</p:cellEditor>								
+							</p:column>
+							<p:column headerText="Valor Total">
+								<h:outputText value="#{produtoSel.vlrTotal}" />
+							</p:column>
+						</p:dataTable>
+				</h:form>
+           	  </p:tab>
+           	  <p:tab title="Fechamento">
+				<h:form id="formPedido">
+					<p:panelGrid columns="3" cellspacing="4">
+						<p:outputLabel value="Identificação do Pedido" />
+						<p:inputText id="userId" value="#{pedidoBean.pedido.id}" readonly="true" />
+						<p:message for="userId" styleClass="error" />
+						
+		 				<p:outputLabel value="Selecione a cliente:" />
+						<p:selectOneMenu id="cliente"
+							value="#{pedidoBean.pedido.cliente}" required="true"
+							requiredMessage="O cliente não pode deixar de ser selecionada">
+							<f:selectItem itemLabel="Selecionar" itemValue="" />
+							<f:selectItems value="#{pedidoBean.listaClientes}" var="cliente"
+								itemLabel="#{cliente.nome}" />
+						</p:selectOneMenu>
+						<p:message for="cliente" styleClass="error" />
+						
+						<p:outputLabel value="Data do Pedido" />
+						<p:inputText id="dtPedido"
+							value="#{pedidoBean.pedido.dtPedido}" required="true"
+							requiredMessage="Data do pedido é um campo requerido"
+							validatorMessage="Data do pedido no formato errado dd/MM/yyyy">
+							<f:convertDateTime pattern="dd/MM/yyyy" />
+						</p:inputText>
+						<p:message for="dtPedido" styleClass="error" />
+						
+						<p:outputLabel value="Observacoes" />
+						<p:inputTextarea rows="10" cols="30" maxlength="100" counterTemplate="{0} Caracteres restantes" autoResize="false"
+						  value="#{pedidoBean.pedido.observacao}" id="observ" required="true" requiredMessage="Observação é um campo requerido"
+						  counter="display">
+						</p:inputTextarea>
+						<p:message for="observ" styleClass="error" />
+						<h:outputText id="display" />
+					</p:panelGrid>
+					<p:commandButton value="Salvar" action="#{pedidoBean.salvar()}" process="@form" update="formPedido,tela" ajax="true"/>
+				</h:form>
+           	  </p:tab>		
+			</p:tabView>
+        </p:tab>
+    </p:tabView>
+
+	<p:dialog header="Visualizar detalhe do produto" widgetVar="detalheDialog" position="center" showEffect="explode">
+	 <h:form id="formSelecao">
+	   <p:panelGrid columns="2" cellspacing="2">
+		   <h:outputText value="Código do Produto" />	
+		   <h:outputLabel value="#{pedidoBean.prodSel.codigo}" />
+				
+		   <h:outputText value="Descrição Detalhada do Produto" />
+		   <h:outputLabel value="#{pedidoBean.prodSel.descricao}" />
+					
+		   <h:outputText value="Valor do Produto" />
+		   <h:outputLabel value="#{pedidoBean.prodSel.precoVenda}" />
+					
+		   <h:outputText value="Categoria do Produto" />
+		   <h:outputLabel value="#{pedidoBean.prodSel.categoria.descricao}" />
+		</p:panelGrid>
+		<center><p:commandButton value="Adicionar ao Carrinho" action="#{pedidoBean.selecionarProduto()}" 
+				ajax="true" onclick="PF('detalheDialog').close();"/></center>
+	  </h:form>
+	</p:dialog>
+		
+</ui:define>
+</ui:composition>

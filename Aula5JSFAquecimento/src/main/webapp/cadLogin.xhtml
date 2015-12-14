@@ -1,0 +1,105 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:p="http://primefaces.org/ui"
+    xmlns:f="http://java.sun.com/jsf/core"
+    template="layout.xhtml">
+
+<ui:define name="content">
+	<h:form id="formLogin">
+		<p:messages id="messages" showDetail="true" autoUpdate="true"
+			closable="true" />
+		<p:panel header="Cadastro / Edição do Usuario">
+			<p:panelGrid columns="3" cellspacing="4">
+				<p:outputLabel value="Codigo do Usuário " />
+				<p:inputText id="codUser" value="#{loginBean.login.id}"
+					readonly="true"/>
+				<p:message for="codUser" styleClass="error" />
+				
+				<p:outputLabel value="Nome Usuário" />
+				<p:inputText id="descUser" value="#{loginBean.login.userName}"
+					required="true"
+					requiredMessage="Nome de usuário é um campo requerido"
+					validatorMessage="Nome de usuário deve conter pelos 5 caracteres">
+					<f:validateLength minimum="5" />
+				</p:inputText>
+				<p:message for="descUser" styleClass="error" />
+
+				<p:outputLabel value="Sua senha" />
+				<p:password id="descSenha" value="#{loginBean.login.passowrd}" feedback="true"
+                    promptLabel="Intensidade da senha" weakLabel="Senha fraca"
+                    goodLabel="Senha muito boa" strongLabel="Senha forte" required="true"
+                    validatorMessage="Senha está muito curta">
+					<f:validateLength minimum="8" />
+				</p:password>
+				<p:message for="descSenha" styleClass="error" />
+
+				<p:outputLabel value="Seu nome" />
+				<p:inputText id="descNome" value="#{loginBean.login.nome}"
+					required="true"
+					requiredMessage="Nome é um campo requerido"
+					validatorMessage="Nome deve conter pelos 5 caracteres">
+					<f:validateLength minimum="5" />
+				</p:inputText>
+				<p:message for="descNome" styleClass="error" />
+
+				<p:outputLabel value="Email" />
+				<p:inputText id="descEmail" value="#{loginBean.login.email}"
+					required="true" validatorMessage="#{loginBean.login.email} não é válido"
+					requiredMessage="Email é um campo requerido">					
+					<f:validateRegex pattern="([^.@]+)(\.[^.@]+)*@([^.@]+\.)+([^.@]+)" />				
+				</p:inputText>
+				<p:message for="descEmail" styleClass="error" />
+				
+
+				<p:outputLabel value="CPF" />
+				<p:inputText id="descCPF" value="#{loginBean.login.cpf}"
+					required="true"
+					requiredMessage="CPF do Usuário é um campo requerido"
+					validatorMessage="CPF do Usuário deve conter 11 caracteres">
+					<f:validateLength minimum="11" />
+				</p:inputText>
+				<p:message for="descCPF" styleClass="error" />
+
+			</p:panelGrid>
+			<p:commandButton value="Incluir" action="#{loginBean.salvar()}"
+				ajax="true" update="formListaUsuarios" />
+			<p:commandButton value="Alterar" action="#{loginBean.alterar()}"
+				ajax="true" update="formListaUsuarios" />
+			<p:commandButton value="Limpar" action="#{loginBean.limpar()}"
+				ajax="true" update="formLogin" />
+		</p:panel>
+	</h:form>
+
+	<h:form id="formListaUsuarios">
+		<p:panel header="Listagem dos Usuários">
+			<p:dataTable var="usuario" value="#{loginBean.listaLogin}"
+				paginator="true" rows="5" id="table" 
+				selection="#{loginBean.loginSel}" selectionMode="single"
+				rowKey="#{usuario.id}">
+				<p:column headerText="Id do Usuario" width="85">
+					<h:outputText value="#{usuario.id}" />
+				</p:column>
+				<p:column headerText="Nome do Usuario" width="175">
+					<h:outputText value="#{usuario.nome}" />
+				</p:column>
+				<p:column headerText="Email do Usuario">
+					<h:outputText value="#{usuario.email}" />
+				</p:column>
+				<p:column headerText="CPF">
+					<h:outputText value="#{usuario.cpf}" />
+				</p:column>
+				<p:column headerText="Editar" style="width:8%">
+					<p:commandButton icon="ui-icon-document-b"
+						action="#{loginBean.editar()}" ajax="true" update="formLogin" />
+				</p:column>
+				<p:column headerText="Excluir" style="width:8%">
+					<p:commandButton icon="ui-icon-trash"
+						action="#{loginBean.excluir()}" ajax="true" update="formLogin" />
+				</p:column>
+			</p:dataTable>
+		</p:panel>
+	</h:form>
+</ui:define>
+</ui:composition>

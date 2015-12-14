@@ -1,0 +1,136 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:p="http://primefaces.org/ui"
+    xmlns:f="http://java.sun.com/jsf/core"
+    template="layout.xhtml">
+
+<ui:define name="content">
+	<h:form id="formProduto">
+		<p:messages id="messages" showDetail="true" autoUpdate="true"
+			closable="true" />
+		<p:panel header="Cadastro / Edição do Produto">
+			<p:panelGrid columns="3" cellspacing="4">
+				<p:outputLabel value="Codigo do Produto" />
+				<p:inputText id="codigoProd" value="#{produtoBean.produto.codigo}"
+					required="true"
+					requiredMessage="Código do produto é um campo requerido"
+					validatorMessage="Código do produto deve conter pelo menos 6 caracteres">
+					<f:validateLength minimum="6" />
+				</p:inputText>
+				<p:message for="codigoProd" styleClass="error" />
+
+				<p:outputLabel value="Descrição do Produto" />
+				<p:inputText id="descProd" value="#{produtoBean.produto.descricao}"
+					required="true"
+					requiredMessage="Descrição do produto é um campo requerido"
+					validatorMessage="Descrição do produto deve conter pelo menos 10 caracteres">
+					<f:validateLength minimum="10" />
+				</p:inputText>
+				<p:message for="descProd" styleClass="error" />
+
+				<p:outputLabel value="Preço de Custo" />
+				<p:inputText id="precoCusto"
+					value="#{produtoBean.produto.precoCusto}" required="true"
+					requiredMessage="Preço de custo do produto é um campo requerido"
+					validatorMessage="Preço de custo do produto não pode ser menor que zero">
+					<f:validateDoubleRange minimum="0.00" />
+				</p:inputText>
+				<p:message for="precoCusto" styleClass="error" />
+
+				<p:outputLabel value="Preço de Venda" />
+				<p:inputText id="precoVenda"
+					value="#{produtoBean.produto.precoVenda}" required="true"
+					requiredMessage="Preço de venda do produto é um campo requerido"
+					validatorMessage="Preço de venda do produto não pode ser menor que zero">
+					<f:validateDoubleRange minimum="0.00" />
+				</p:inputText>
+				<p:message for="precoVenda" styleClass="error" />
+
+				<p:outputLabel value="Quantidade" />
+				<p:inputText id="qtd" value="#{produtoBean.produto.qtdEstoque}"
+					required="true"
+					requiredMessage="Quantidade do produto no estoque é um campo requerido"
+					validatorMessage="Quantidade do produto no estoque não pode ser menor que zero">
+					<f:validateLongRange minimum="0" />
+				</p:inputText>
+				<p:message for="qtd" styleClass="error" />
+
+				<p:outputLabel value="Selecione a categoria:" />
+				<p:selectOneMenu id="categoria"
+					value="#{produtoBean.produto.categoria}" required="true"
+					requiredMessage="A categoria não pode deixar de ser selecionada">
+					<f:selectItem itemLabel="Selecionar" itemValue="" />
+					<f:selectItems value="#{produtoBean.listaCategorias}" var="mark"
+						itemLabel="#{mark.descricao}" />
+				</p:selectOneMenu>
+				<p:message for="categoria" styleClass="error" />
+
+				<p:outputLabel value="Data de entrada" />
+				<p:inputText id="dtEntrada"
+					value="#{produtoBean.produto.dataEntrada}" required="true"
+					requiredMessage="Data do produto é um campo requerido"
+					validatorMessage="Data do produto no formato errado dd/MM/yyyy">
+					<f:convertDateTime pattern="dd/MM/yyyy" />
+				</p:inputText>
+				<p:message for="dtEntrada" styleClass="error" />
+
+			</p:panelGrid>
+			<p:commandButton value="Incluir" action="#{produtoBean.salvar()}"
+				ajax="true" update="formListaProduto" />
+			<p:commandButton value="Alterar" action="#{produtoBean.alterar()}"
+				ajax="true" update="formListaProduto" />
+			<p:commandButton value="Limpar" action="#{produtoBean.limpar()}"
+				ajax="true" update="formProduto" />
+		</p:panel>
+	</h:form>
+
+	<h:form id="formListaProduto">
+		<p:panel header="Listagem dos Produtos">
+			<p:dataTable var="produto" value="#{produtoBean.listaProdutos}"
+				paginator="true" rows="5" id="table"
+				selection="#{produtoBean.prodSel}" selectionMode="single"
+				rowKey="#{produto.id}">
+				<p:column headerText="Id do Produto">
+					<h:outputText value="#{produto.id}" />
+				</p:column>
+				<p:column headerText="Código do Produto">
+					<h:outputText value="#{produto.codigo}" />
+				</p:column>
+				<p:column headerText="Descrição do Produto">
+					<h:outputText value="#{produto.descricao}" />
+				</p:column>
+				<p:column headerText="Preço de Custo">
+					<h:outputText value="#{produto.precoCusto}" />
+				</p:column>
+				<p:column headerText="Preço de Venda">
+					<h:outputText value="#{produto.precoVenda}" />
+				</p:column>
+				<p:column headerText="Quantidade Estoque">
+					<h:outputText value="#{produto.qtdEstoque}" />
+				</p:column>
+				<p:column headerText="Data de Entrada">
+					<h:outputText value="#{produto.dataEntrada}">
+						<f:convertDateTime pattern="dd/MM/yyyy" />
+					</h:outputText>
+				</p:column>
+				<p:column headerText="Cód.Categoria">
+					<h:outputText value="#{produto.categoria.id}" />
+				</p:column>
+				<p:column headerText="Desc.Categoria">
+					<h:outputText value="#{produto.categoria.descricao}" />
+				</p:column>
+				<p:column headerText="Editar" style="width:8%">
+					<p:commandButton icon="ui-icon-document-b"
+						action="#{produtoBean.editar()}" ajax="true" update="formProduto" />
+				</p:column>
+				<p:column headerText="Excluir" style="width:8%">
+					<p:commandButton icon="ui-icon-trash"
+						action="#{produtoBean.excluir()}" ajax="true" update="formProduto" />
+				</p:column>
+			</p:dataTable>
+		</p:panel>
+	</h:form>
+</ui:define>
+</ui:composition>

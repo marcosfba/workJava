@@ -1,0 +1,100 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:p="http://primefaces.org/ui"
+    xmlns:f="http://java.sun.com/jsf/core"
+    template="layout.xhtml">
+
+<ui:define name="content">
+	<h:form id="formEmail">
+		<p:messages id="messages" showDetail="true" autoUpdate="true" closable="true" />
+		<p:panel header="Cadastro / Edição do Contato de Email">
+			<p:panelGrid columns="3" style="border:0px;">
+				<p:outputLabel value="Codigo do Email" />
+				<p:inputText id="userId" value="#{emailBean.email.id}"
+					readonly="true" />
+				<br />
+
+				<p:outputLabel value="Pessoa:"/>
+				<p:selectOneMenu id="idPessoa" value="#{emailBean.email.pessoa}" required="true" 
+					converter="#{genericConverter}" requiredMessage="Deve-se selecionar a pessoa">
+						<f:selectItem itemLabel="Selecionar" itemValue="" />
+						<f:selectItems value="#{pessoaBean.pessoas}" var="mark" 
+							itemLabel="#{mark.nome}"/>
+				</p:selectOneMenu>
+				<p:message for="idPessoa" styleClass="error" />
+
+				<p:outputLabel value="Tipo de Email:"/>
+				<p:selectOneMenu id="tipoEmailSel" value="#{emailBean.email.tipoEmail}" required="true" 
+					converter="#{tipoEmailConverter}" requiredMessage="Deve-se selecionar o tipo de Email"
+					validatorMessage="Tipo de Email inválido">
+						<f:selectItem itemLabel="Selecionar" itemValue="" />
+						<f:selectItems value="#{listUtilBean.listTiposEmails}" var="tipo" 
+							itemLabel="#{tipo.description}" itemValue="#{tipo.value}" />
+				</p:selectOneMenu>
+				<p:message for="tipoEmailSel" styleClass="error" />
+	
+				<p:outputLabel value="Descrição do email" />
+				<p:inputText id="descContato" size="45"
+					value="#{emailBean.email.descricao}" required="true"
+					equiredMessage="Descrição do email é um campo requerido">
+				</p:inputText>
+				<p:message for="descContato" styleClass="error" />				
+			</p:panelGrid>
+			
+			<p:commandButton value="Incluir" action="#{emailBean.salvar()}"
+				ajax="true" update="formEmail,formListaEmail" />
+			<p:commandButton value="Alterar" action="#{emailBean.salvar()}"
+				ajax="true" update="formEmail,formListaEmail" />
+			<p:commandButton value="Limpar" action="#{emailBean.limpar()}" 
+			   immediate="true" process="@this" update="formEmail" />
+		</p:panel>
+	</h:form>
+
+	<h:form id="formListaEmail">
+		<p:panel header="Listagem dos Emails">
+			<p:dataTable var="emailGrid" value="#{emailBean.emails}" emptyMessage="Sem registros para serem demonstrados"
+				paginator="true" rows="5" id="table" selection="#{emailBean.emailSel}" rowKey="#{emailGrid.id}">
+				<p:column headerText="Código do Email">
+					<h:outputText value="#{emailGrid.id}" />
+				</p:column>
+				<p:column headerText="Referente a Pessoa">
+					<h:outputText value="#{emailGrid.pessoa.nome}" />
+				</p:column>
+				<p:column headerText="Descrição do Email">
+					<h:outputText value="#{emailGrid.descricao}" />
+				</p:column>
+				<p:column headerText="Tipo de Email">
+					<h:outputText value="#{emailGrid.tipoEmail}" />
+				</p:column>
+				<p:column headerText="Editar" style="width:8%">
+				  <center><p:commandButton action="#{emailBean.editar()}" icon="ui-icon-document-b" ajax="true" 
+						process="@form" update="formEmail">
+						<f:setPropertyActionListener value="#{emailGrid}" target="#{emailBean.emailSel}" />
+					</p:commandButton>
+				  </center> 
+				</p:column>
+				<p:column headerText="Excluir" style="width:8%">
+					<center><p:commandButton value="Excluir" oncomplete="PF('detalheDialog').show();" process="@form" update="formRemover">
+						<f:setPropertyActionListener value="#{emailGrid}" target="#{emailBean.emailSel}" />
+					</p:commandButton>
+					</center>
+				</p:column>
+			</p:dataTable>
+		</p:panel>
+	</h:form>
+	
+	<p:dialog header="Excluir Email" widgetVar="detalheDialog" position="center" showEffect="explode">
+	<h:form id="formRemover">
+		<p:panel header="Confirma a remoção?">
+		<center>
+			<p:commandButton value="Sim" action="#{emailBean.excluir()}" ajax="true" update="formEmail,formListaEmail" oncomplete="PF('detalheDialog').hide()" />
+			<p:commandButton value="Não" action="#{emailBean.limpar()}" ajax="true" update="formEmail,formListaEmail" oncomplete="PF('detalheDialog').hide()" />
+		</center>
+		</p:panel>    
+      </h:form>
+	</p:dialog>
+	
+</ui:define>
+</ui:composition>

@@ -1,0 +1,66 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:p="http://primefaces.org/ui"
+    xmlns:f="http://java.sun.com/jsf/core"
+    template="layout.xhtml">
+
+<ui:define name="content">
+	<h:form id="formProduto">
+		<p:messages id="messages" showDetail="true" autoUpdate="true"
+			closable="true" />
+		<p:panel header="Consulta de Produtos">
+			<p:panelGrid columns="2">
+				<p:outputLabel value="Id" />
+				<p:inputText value="#{produtoBean.consulta.id}"/>
+
+				<p:outputLabel value="Descrição" />
+				<p:inputText value="#{produtoBean.consulta.descricao}"/>
+
+			</p:panelGrid>
+			<p:commandButton value="Buscar" action="#{produtoBean.buscar()}" ajax="true" update="formListaProduto" />
+			<p:commandButton value="Limpar" action="#{produtoBean.limpar()}" ajax="true" update="formProduto,formListaProduto" />
+		</p:panel>
+	</h:form>
+
+	<h:form id="formListaProduto">
+		<p:panel header="Lista dos Produtos">
+			<p:dataTable var="produto" value="#{produtoBean.listaProdutos}"
+				paginator="true" rows="5" id="table"
+				selection="#{produtoBean.prodSel}" selectionMode="single"
+				rowKey="#{produto.id}">
+				<p:column headerText="Id do Produto">
+					<h:outputText value="#{produto.id}" />
+				</p:column>
+				<p:column headerText="Código do Produto">
+					<h:outputText value="#{produto.codigo}" />
+				</p:column>
+				<p:column headerText="Descrição do Produto">
+					<h:outputText value="#{produto.descricao}" />
+				</p:column>
+				<p:column headerText="Preço de Custo">
+					<h:outputText value="#{produto.precoCusto}" />
+				</p:column>
+				<p:column headerText="Preço de Venda">
+					<h:outputText value="#{produto.precoVenda}" />
+				</p:column>
+				<p:column headerText="Quantidade em Estoque">
+					<h:outputText value="#{produto.qtdEstoque}" />
+				</p:column>
+				<p:column headerText="Data de Entrada">
+					<h:outputText value="#{produto.dataEntrada}">
+						<f:convertDateTime pattern="dd/MM/yyyy" />
+					</h:outputText>
+				</p:column>
+				<p:column headerText="Cód.Categoria">
+					<h:outputText value="#{produto.categoria.id}" />
+				</p:column>
+				<p:column headerText="Desc.Categoria">
+					<h:outputText value="#{produto.categoria.descricao}" />
+				</p:column>
+			</p:dataTable>
+		</p:panel>
+	</h:form>
+</ui:define>
+</ui:composition>

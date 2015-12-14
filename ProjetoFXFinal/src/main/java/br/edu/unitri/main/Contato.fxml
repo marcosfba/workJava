@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="br.edu.unitri.main.ContatoFX">
+	<top>
+		<TabPane fx:id="tabTela" prefHeight="404.0" prefWidth="500.0" tabClosingPolicy="UNAVAILABLE" BorderPane.alignment="CENTER" xmlns:fx="http://javafx.com/fxml">
+			<tabs>
+				<Tab text="Contatos">
+					<content>
+						<TableView fx:id="tbPessoas" prefHeight="200.0" prefWidth="200.0" />
+					</content>
+				</Tab>
+				<Tab text="Detalhamento">
+					<content>
+						<Pane prefHeight="285.0" prefWidth="600.0">
+							<children>
+								<Label layoutX="14.0" layoutY="14.0" text="Nome da Pessoa" />
+								<TabPane layoutY="47.0" prefHeight="329.0" prefWidth="600.0" tabClosingPolicy="UNAVAILABLE">
+									<tabs>
+										<Tab text="Telefones">
+											<content>
+												<AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+													<children>
+														<TableView fx:id="tbTelefones" prefHeight="301.0" prefWidth="600.0" />
+													</children>
+												</AnchorPane>
+											</content>
+										</Tab>
+										<Tab text="Emails">
+											<content>
+												<AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+													<children>
+														<TableView fx:id="tbEmails" layoutX="5.0" layoutY="8.0" prefHeight="285.0" prefWidth="590.0" />
+													</children>
+												</AnchorPane>
+											</content>
+										</Tab>
+										<Tab text="Endereços">
+											<content>
+												<AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+													<children>
+														<TableView fx:id="tbEnderecos" layoutX="5.0" layoutY="8.0" prefHeight="285.0" prefWidth="590.0" />
+													</children>
+												</AnchorPane>
+											</content>
+										</Tab>
+									</tabs>
+								</TabPane>
+								<TextField fx:id="edNomePessoa" disable="true" layoutX="115.0" layoutY="10.0" prefHeight="25.0" prefWidth="478.0" />
+							</children>
+						</Pane>
+					</content>
+				</Tab>
+			</tabs>
+		</TabPane>
+	</top>
+</BorderPane>

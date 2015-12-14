@@ -1,0 +1,80 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:p="http://primefaces.org/ui"
+    xmlns:f="http://java.sun.com/jsf/core"
+    template="layout.xhtml">
+
+<ui:define name="content">
+	<h:form id="formPedido">
+		<p:messages id="messages" showDetail="true" autoUpdate="true"
+			closable="true" />
+		<p:panel header="Consulta de Pedidos">
+			<p:panelGrid columns="3">
+				<p:outputLabel id="idPedido" value="Id" />
+				<p:inputText value="#{pedidoBean.consulta.id}"/>
+				<p:message for="idPedido" styleClass="sucess" />
+
+				<p:outputLabel value="Data do Pedido" />
+				<p:calendar id="dtPedido" value="#{pedidoBean.consulta.dtPedido}"  showOn="button"
+				  validatorMessage="Data do produto no formato errado dd/MM/yyyy" pattern="dd/MM/yyyy"/>
+				<p:message for="dtPedido" styleClass="error" />
+
+			</p:panelGrid>
+			<p:commandButton value="Buscar" action="#{pedidoBean.buscar()}" ajax="true" update="formListaPedidos" />
+			<p:commandButton value="Limpar" action="#{pedidoBean.limpar()}" ajax="true" update="formPedido,formListaPedidos" />
+		</p:panel>
+	</h:form>
+
+	<h:form id="formListaPedidos">
+		<p:panel header="Listagem dos Pedidos">
+			<p:dataTable var="pedido" value="#{pedidoBean.listaPedido}" paginator="true" rows="5" id="table" 
+				selection="#{pedidoBean.pedidoSel}" rowKey="#{pedido.id}">
+				<p:column headerText="Id do Pedido" width="10%">
+					<h:outputText value="#{pedido.id}" />
+				</p:column>
+				<p:column headerText="Nome do Cliente" width="60%">
+					<h:outputText value="#{pedido.cliente.nome}" />
+				</p:column>
+				<p:column headerText="Data do Pedido" width="15%">
+					<h:outputText value="#{pedido.dtPedido}" >
+						<f:convertDateTime pattern="dd/MM/yyyy" />
+					</h:outputText>
+				</p:column>
+				<p:column headerText="Itens" style="width:15%">
+					<p:commandButton value="View" icon="ui-icon-document-b" oncomplete="PF('detalheDialog').show();" process="@form" update=":formSelecao">
+						<f:setPropertyActionListener value="#{pedido}" target="#{pedidoBean.pedidoSel}" />
+					</p:commandButton>
+				</p:column>
+			</p:dataTable>
+		</p:panel>
+	</h:form>
+	
+	<p:dialog header="Visualização dos Itens do Pedido" widgetVar="detalheDialog" position="center" showEffect="explode" width="1200px">
+	 <h:form id="formSelecao">
+			<p:dataTable var="itens" value="#{pedidoBean.pedidoSel.itens}" paginator="true" rows="15" id="table">
+				<p:column headerText="Código do Produto" width="10%" >
+					<h:outputText value="#{itens.produto.codigo}" />
+				</p:column>
+				<p:column headerText="Descrição do Produto" width="30%" >
+					<h:outputText value="#{itens.produto.descricao}" />
+				</p:column>
+				<p:column headerText="Categoria do Produto" width="30%" >
+					<h:outputText value="#{itens.produto.categoria.descricao}" />
+				</p:column>
+				<p:column headerText="Quantidade" width="10%">
+					<h:outputText value="#{itens.qtdItem}" />
+				</p:column>
+				<p:column headerText="Valor do Desconto" width="10%">
+					<h:outputText value="#{itens.vlrDesconto}" />
+				</p:column>
+				<p:column headerText="Valor do Item" width="10%">
+					<h:outputText value="#{itens.vlrItem}" />
+				</p:column>
+			</p:dataTable>
+	  </h:form>
+	</p:dialog>
+	
+</ui:define>
+</ui:composition>

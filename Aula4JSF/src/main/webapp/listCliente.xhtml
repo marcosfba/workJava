@@ -1,0 +1,57 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:p="http://primefaces.org/ui"
+    xmlns:f="http://java.sun.com/jsf/core"
+    template="layout.xhtml">
+
+<ui:define name="content">
+	<h:form id="formCliente">
+		<p:messages id="messages" showDetail="true" autoUpdate="true"
+			closable="true" />
+		<p:panel header="Consulta de Clientes">
+			<p:panelGrid columns="2">
+				<p:outputLabel value="Id" />
+				<p:inputText value="#{clienteBean.consulta.id}"/>
+
+				<p:outputLabel value="Descrição/Nome" />
+				<p:inputText value="#{clienteBean.consulta.descricao}"/>
+
+			</p:panelGrid>
+			<p:commandButton value="Buscar" action="#{clienteBean.buscar()}" ajax="true" update="formListaCliente" />
+			<p:commandButton value="Limpar" action="#{clienteBean.limpar()}" ajax="true" update="formCliente,formListaCliente" />
+		</p:panel>
+	</h:form>
+
+	<h:form id="formListaCliente">
+		<p:panel header="Lista dos Clientes">
+			<p:dataTable var="cliente" value="#{clienteBean.listaClientes}"
+				paginator="true" rows="5" id="table" 
+				selection="#{clienteBean.clienteSel}" selectionMode="single"
+				rowKey="#{cliente.id}">
+				<p:column headerText="Id do Cliente" width="85">
+					<h:outputText value="#{cliente.id}" />
+				</p:column>
+				<p:column headerText="Nome do Cliente" width="175">
+					<h:outputText value="#{cliente.nome}" />
+				</p:column>
+				<p:column headerText="Email do Cliente">
+					<h:outputText value="#{cliente.email}" />
+				</p:column>
+				<p:column headerText="CPF">
+					<h:outputText value="#{cliente.cpf}" />
+				</p:column>
+				<p:column headerText="Identidade">
+					<h:outputText value="#{cliente.identidade}" />
+				</p:column>
+				<p:column headerText="Data de Nascimento">
+					<h:outputText value="#{cliente.dtNascimento}">
+						<f:convertDateTime pattern="dd/MM/yyyy" />
+					</h:outputText>
+				</p:column>
+			</p:dataTable>
+		</p:panel>
+	</h:form>
+</ui:define>
+</ui:composition>
